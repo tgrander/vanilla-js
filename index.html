@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Organization Chart</title>
+    <style>
+      html,
+      body {
+        height: 100%;
+      }
+
+      body {
+        font-family: Arial, sans-serif;
+        background-color: #f4f4f4;
+      }
+
+      #chart-container {
+        height: 100%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        background: white;
+      }
+
+      .employee-node {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 1rem;
+      }
+    </style>
+  </head>
+
+  <body>
+    <h1>Organization Chart</h1>
+    <div id="chart-container"></div>
+  </body>
+
+  <script type="module" src="/src/main.ts"></script>
+</html>
