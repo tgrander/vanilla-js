@@ -38,8 +38,6 @@ const data: EmployeeNode = {
  * - Responsive
  */
 
-console.log("TESTING TESTING");
-
 export class OrgChart {
   private container: HTMLElement;
   private data: EmployeeNode;
@@ -52,8 +50,6 @@ export class OrgChart {
     this.container = container;
     this.data = data;
     this.render();
-
-    console.log("HELLO HELLO");
   }
 
   render() {
@@ -66,7 +62,7 @@ export class OrgChart {
     const ul = document.createElement("ul");
     ul.className = "org-chart";
 
-    const li = this.createEmployeeNode(rootNode);
+    const li = document.createElement("li");
     const node = this.createEmployeeNode(rootNode);
     li.appendChild(node);
 

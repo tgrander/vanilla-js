@@ -6,34 +6,112 @@
       html,
       body {
         height: 100%;
+        margin: 0;
+        padding: 0;
       }
 
       body {
         font-family: Arial, sans-serif;
-        background-color: #f4f4f4;
+        background-color: #bfbfbf;
+      }
+
+      .heading {
+        width: 100%;
+        margin: 0 auto;
+        padding: 1rem;
       }
 
       #chart-container {
         height: 100%;
+        width: 90%;
+        margin: 0 auto;
         display: flex;
         justify-content: center;
-        align-items: center;
         background: white;
+        padding-top: 2rem;
+        padding-right: 1rem;
+        padding-left: 1rem;
+        border-radius: 1rem;
       }
 
-      .employee-node {
+      ul {
+        padding: 0;
+      }
+      p {
+        margin: 0;
+      }
+
+      .org-chart {
         display: flex;
         justify-content: center;
+      }
+
+      .org-chart ul {
+        display: flex;
+        padding-top: 1rem;
+        position: relative;
+        transition: all 0.5s;
+      }
+
+      .org-chart li {
+        display: flex;
+        flex-direction: column;
         align-items: center;
-        padding: 1rem;
+        text-align: center;
+        list-style-type: none;
+        position: relative;
+        padding: 1rem 0.25rem 0 0.25rem;
+      }
+
+      .org-chart li::before,
+      .org-chart li::after {
+        content: "";
+        position: absolute;
+        top: 0;
+        right: 50%;
+        border-top: 1px solid #ccc;
+        width: 50%;
+        height: 1rem;
+      }
+
+      .org-chart li::after {
+        right: auto;
+        left: 50%;
+        border-left: 1px solid #ccc;
+      }
+
+      .org-chart ul::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 50%;
+        width: 0;
+        height: 1rem;
+        border-left: 1px solid #ccc;
+      }
+
+      .node {
+        border: 1px solid #ccc;
+        padding: 0.25rem 0.5rem;
+        border-radius: 1rem;
+        display: inline-block;
+      }
+
+      .name {
+        font-size: 1.25rem;
+        font-weight: medium;
+      }
+
+      .title {
+        font-size: 1rem;
+        color: gray;
       }
     </style>
   </head>
 
   <body>
-    <h1>Organization Chart</h1>
+    <h1 class="heading">Organization Chart</h1>
     <div id="chart-container"></div>
   </body>
-
   <script type="module" src="/src/main.ts"></script>
 </html>
