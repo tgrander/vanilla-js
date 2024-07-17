@@ -9,10 +9,15 @@
         margin: 0;
         padding: 0;
       }
-
       body {
         font-family: Arial, sans-serif;
-        background-color: #bfbfbf;
+        background-color: #d5d4d4;
+      }
+      ul {
+        padding: 0;
+      }
+      p {
+        margin: 0;
       }
 
       .heading {
@@ -32,13 +37,6 @@
         padding-right: 1rem;
         padding-left: 1rem;
         border-radius: 1rem;
-      }
-
-      ul {
-        padding: 0;
-      }
-      p {
-        margin: 0;
       }
 
       .org-chart {
@@ -80,6 +78,16 @@
         border-left: 1px solid #ccc;
       }
 
+      /* .org-chart li:only-child::after,
+      .org-chart li:only-child::before {
+        display: none;
+      }
+
+      .org-chart li:first-child::before,
+      .org-chart li:last-child::after {
+        border: 0 none;
+      } */
+
       .org-chart ul::before {
         content: "";
         position: absolute;
@@ -88,6 +96,11 @@
         width: 0;
         height: 1rem;
         border-left: 1px solid #ccc;
+      }
+
+      .org-chart > ul > li::before,
+      .org-chart > ul > li::after {
+        border: 0 none;
       }
 
       .node {
