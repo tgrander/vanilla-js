@@ -15,5 +15,6 @@ td,
 th {
   width: 4rem;
   border: 1px solid var(--_border);
-  padding: 0;
+  padding: 0.25rem 0.25rem;
+  vertical-align: middle;
 }

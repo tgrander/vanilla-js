@@ -37,6 +37,11 @@ class Cell {
   }
 }
 
+const rowAttribute = "row";
+const colAttribute = "col";
+
+const selectedClass = "selected";
+
 export class Spreadsheet {
   private gridSize = 10;
   private container: HTMLElement;
@@ -49,6 +54,8 @@ export class Spreadsheet {
 
     // Create and render grid
     this.createGrid();
+    // Event Listeners
+    this.initEventListeners();
   }
 
   /**
@@ -109,9 +116,9 @@ export class Spreadsheet {
         // Enable cell for user input
         cell.contentEditable = "true";
         // Create dataset attr for row
-        cell.dataset.row = i.toString();
+        cell.dataset[rowAttribute] = i.toString();
         // // Create dataset attr for column
-        cell.dataset.col = j.toString();
+        cell.dataset[colAttribute] = j.toString();
         // Complete the cells 2D grid by creating new Cell at position (i, j)
         this.cells[i][j] = new Cell(cell);
       }
@@ -122,19 +129,38 @@ export class Spreadsheet {
   }
 
   // Init Event Listeners
-  private initEventListeners() {}
+  private initEventListeners() {
+    this.container.addEventListener("click", this.handleCellClick.bind(this));
+  }
 
   // Handle Cell Click
   private handleCellClick(event: Event) {
     const target = event.target as HTMLTableCellElement;
 
     if (target.tagName === "TD") {
-      this.selectCell(target);
+      this.handleSelectCell(target);
+
+      console.log("this.selectedCell :>> ", this.selectedCell);
     }
   }
 
   // Select Cell
-  private selectCell(cellElement: HTMLTableCellElement) {}
+  private handleSelectCell(cellElement: HTMLTableCellElement) {
+    // remove `selected` class from prev selected cell
+    if (this.selectedCell) {
+      this.selectedCell.element.classList.remove(selectedClass);
+    }
+
+    // Extract cell row and column from cell element data attributes
+    const row = parseInt(cellElement.dataset[rowAttribute] ?? "0");
+    const col = parseInt(cellElement.dataset[colAttribute] ?? "0");
+
+    // Get Cell class in cells grid at position (row, col)
+    // Set selected cell to Cell
+    this.selectedCell = this.cells[row][col];
+    // Add `selected` class anme to grid Cell's element
+    this.selectedCell.element.classList.add(selectedClass);
+  }
 }
 
 // Instantiate spreadsheet app in index.html
