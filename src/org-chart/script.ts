@@ -52,7 +52,7 @@ export class OrgChart {
         <button id="search-button">Search</button>
       </header>
       <!-- Org Chart -->
-      <section id="org-chart-container"></section>
+      <main id="org-chart-container"></main>
     `;
 
     this.setPageTitleHeading();
