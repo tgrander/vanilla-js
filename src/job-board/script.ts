@@ -39,8 +39,8 @@ export class JobBoard {
       <button id="load-more" disabled>Load More</button>
     `;
 
-    (document.querySelector("h1.heading") as HTMLHeadingElement).textContent =
-      "Hacker News Job Board";
+    const h1 = document.querySelector("h1.heading") as HTMLHeadingElement;
+    h1.textContent = "Hacker News Job Board";
 
     this.jobList = this.container.querySelector(
       "#job-list"
@@ -118,13 +118,13 @@ export class JobBoard {
     jobs.forEach((job) => {
       const li = document.createElement("li");
       li.className = "job";
-      li.innerHTML = `
+      li.innerHTML = html`
         <div class="job-card">
-          <h3>${this.createJobTitle(job)}</h3>
+          <h3 class="job-title truncated">${this.createJobTitle(job)}</h3>
           <div class="metadata">
-            <span>By ${job.by}</span>
-            <span>-</span>
-            <span>${formatDate(job.time)}</span>
+            <span class="by">By ${job.by}</span>
+            <span class="dot-divider"></span>
+            <span class="date">${formatDate(job.time)}</span>
           </div>
         </div>
       `;
