@@ -1,21 +1,28 @@
+import html from "noop-tag";
+
 interface Employee {
   name: string;
   title: string;
   children?: Employee[];
 }
 
+const headingTitle = "Organization Chart";
+
 export class OrgChart {
-  private container: HTMLElement;
+  private containerId: string;
   private data: Employee;
+  private container: HTMLElement;
   private searchInput: HTMLInputElement;
   private searchButton: HTMLButtonElement;
 
   constructor(containerId: string, data: Employee) {
-    const container = document.getElementById(containerId);
-    if (container === null) throw "Container element not found";
-    this.container = container;
-
+    this.containerId = containerId;
     this.data = data;
+    this.renderApp();
+
+    const container = document.getElementById(this.containerId);
+    if (container === null) throw "Container element not found in DOM";
+    this.container = container;
 
     const input = document.getElementById("search-input");
     if (input === null) throw "Search input element not found";
@@ -25,15 +32,40 @@ export class OrgChart {
     if (searchButton === null) throw "Search button element not found";
     this.searchButton = searchButton as HTMLButtonElement;
 
-    this.init();
-  }
-
-  private init(): void {
-    this.render();
+    this.renderChart();
     this.setupEventListeners();
   }
 
-  private render(): void {
+  private renderApp() {
+    const app = document.querySelector(".app");
+    if (app === null) throw "Element with class `app` not found in DOM";
+
+    // Clear app contents
+    app.innerHTML = "";
+
+    // Create
+    app.innerHTML = html`
+      <!-- Search Input -->
+      <header>
+        <input id="search-input" placeholder="Search employee..." />
+        <button id="search-button">Search</button>
+      </header>
+      <!-- Org Chart -->
+      <section id="org-chart-container"></section>
+    `;
+
+    this.setPageTitleHeading();
+  }
+
+  private setPageTitleHeading() {
+    const h1 = document.querySelector(".heading");
+    if (h1 === null) throw "No h1 found in DOM";
+
+    h1.textContent = "";
+    h1.textContent = headingTitle;
+  }
+
+  private renderChart(): void {
     const chart = this.createChart(this.data);
     this.container.innerHTML = "";
     this.container.appendChild(chart);

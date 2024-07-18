@@ -20,6 +20,11 @@
         margin: 0;
       }
 
+      header {
+        display: flex;
+        gap: 1rem;
+      }
+
       .heading {
         width: 100%;
         margin: 0 auto;
@@ -41,6 +46,7 @@
         border-radius: 1rem;
       }
 
+      /* ORG CHART CSS */
       .org-chart {
         display: flex;
         justify-content: center;
@@ -109,26 +115,14 @@
         font-size: 1rem;
         color: gray;
       }
-
-      header {
-        display: flex;
-        gap: 1rem;
-      }
     </style>
   </head>
 
   <body>
-    <h1 class="heading">Organization Chart</h1>
-    <div class="app">
-      <!-- Search Input -->
-      <header>
-        <input id="search-input" placeholder="Search employee..." />
-        <button id="search-button">Search</button>
-      </header>
-
-      <!-- Org Chart -->
-      <section id="org-chart-container"></section>
-    </div>
+    <h1 class="heading">Page</h1>
+    <div class="app"></div>
   </body>
+
+  <!-- <script type="module" src="/src/spreadsheet.ts"></script> -->
   <script type="module" src="/src/main.ts"></script>
 </html>
