@@ -1,7 +1,9 @@
-export function loadCSS(filename: string) {
+type Feature = "org-chart" | "spreadsheet";
+
+export function loadCSS(feature: Feature) {
   const link = document.createElement("link");
   link.rel = "stylesheet";
   link.type = "text/css";
-  link.href = filename;
+  link.href = `src/${feature}/styles.css`;
   document.head.appendChild(link);
 }

@@ -58,7 +58,7 @@ export class OrgChart {
     this.setPageTitleHeading();
 
     // Load CSS
-    loadCSS("src/org-chart/styles.css");
+    loadCSS("org-chart");
   }
 
   private setPageTitleHeading() {
