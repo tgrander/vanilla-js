@@ -37,11 +37,14 @@ export class OrgChart {
     const chart = this.createChart(this.data);
     this.container.innerHTML = "";
     this.container.appendChild(chart);
+
+    const orgChart = this.container.querySelector("ul");
+    if (!orgChart) throw "Container element must have a `ul` child";
+    orgChart.className = "org-chart";
   }
 
   private createChart(employee: Employee): HTMLElement {
     const ul = document.createElement("ul");
-    ul.className = "org-chart";
 
     const li = document.createElement("li");
     const node = this.createNode(employee);
@@ -90,11 +93,9 @@ export class OrgChart {
     // Add event listener to input field and search button that triggers this function
     // Get the input field value
     const searchValue = this.searchInput.value.trim().toLocaleLowerCase();
-    console.log("searchValue :>> ", searchValue);
 
     // ONly continue if search input value is valid
     if (searchValue.length > 0) {
-      console.log("traverse");
       // Traverse the org chart tree and check the name and title of each node for a match
       const nodes = this.container.getElementsByClassName("node");
       Array.from(nodes).forEach((node) => {
