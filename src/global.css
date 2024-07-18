@@ -1,5 +1,6 @@
 :root {
   --foreground: #0b1215;
+  --max-width: 800px;
 
   font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
   line-height: 1.5;
@@ -24,6 +25,9 @@ body {
 }
 body {
   font-family: Arial, sans-serif;
+  display: grid;
+  min-height: 100vh;
+  min-height: 100dvh;
 }
 
 ul {
@@ -70,20 +74,16 @@ button:focus-visible {
   outline: 4px auto -webkit-focus-ring-color;
 }
 
-.heading {
-  width: 100%;
-  margin: 0 auto;
-  padding: 1rem;
+h1.heading {
+  padding: 1rem 0;
 }
 
 #app {
   height: 100%;
-  width: 90%;
-  max-width: 1280px;
-  margin: 0 auto;
+  /* margin: 0 auto; */
   display: flex;
   flex-direction: column;
-  align-items: center;
+  /* align-items: center; */
   gap: 1rem;
   background: white;
   padding-top: 2rem;

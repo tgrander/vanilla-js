@@ -1,20 +1,35 @@
-body {
-  --_primary: #ff6602;
+:root {
+  --primary-50: #fff0e6;
+  --primary-100: #ffd0b1;
+  --primary-200: #ffb98b;
+  --primary-300: #ff9855;
+  --primary-400: #ff8535;
+  --primary-500: #ff6602;
+  --primary-600: #e85d02;
+  --primary-700: #b54801;
+  --primary-800: #8c3801;
+  --primary-900: #6b2b01;
+
   --_bg-color: #f6f6ef;
   --_border-color: #dcdcdc;
   --_card-bg: #ffffff;
   --_foreground-muted: #666666;
+}
 
+html,
+body {
   background-color: var(--_bg-color);
 }
 
 #app,
 #container {
   background-color: var(--_bg-color);
+  padding: 0;
 }
 
 h1.heading {
-  color: var(--_primary);
+  margin: 0 auto;
+  color: var(--primary-500);
 }
 
 #job-list {
@@ -23,9 +38,15 @@ h1.heading {
   gap: 1rem;
 }
 
-#load-more {
-  background: var(--_primary);
+button#load-more {
+  font-weight: 600;
+  background: var(--primary-500);
   color: white;
+  border-radius: 0.25rem;
+  transition: background-color 0.3s ease;
+}
+button#load-more:hover {
+  background: var(--primary-600);
 }
 
 .truncated {
@@ -44,6 +65,7 @@ h1.heading {
   text-align: left;
   background-color: var(--_card-bg);
   padding: 1rem;
+  border-radius: 0.25rem;
 }
 
 .job-card .job-title {
