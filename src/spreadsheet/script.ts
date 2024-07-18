@@ -29,9 +29,12 @@ import html from "noop-tag";
  * - Show appropriate error messages for invalid formulas
  */
 
+type Format = "bold" | "italic" | "underline";
+
 class Cell {
   value: string = "";
   element: HTMLTableCellElement;
+  formatting: Set<Format> = new Set();
 
   constructor(element: HTMLTableCellElement) {
     this.element = element;
@@ -41,6 +44,7 @@ class Cell {
 const rowAttribute = "row";
 const colAttribute = "col";
 const selectedClass = "selected";
+const editableDivSelector = "div.editable";
 
 const TAG_NAMES = {
   TD: "TD",
@@ -146,10 +150,7 @@ export class Spreadsheet {
       "dblclick",
       this.handleCellDoubleClick.bind(this)
     );
-    document.addEventListener(
-      "keydown",
-      this.handleCellKeyPressEnter.bind(this)
-    );
+    document.addEventListener("keydown", this.handleKeyPress.bind(this));
   }
 
   // Handle Cell Click
@@ -176,13 +177,9 @@ export class Spreadsheet {
       }
     }
 
-    // Extract cell row and column from cell element data attributes
-    const row = parseInt(cellElement.dataset[rowAttribute] ?? "0");
-    const col = parseInt(cellElement.dataset[colAttribute] ?? "0");
-
     // Get Cell class in cells grid at position (row, col)
     // Set selected cell to Cell
-    this.selectedCell = this.cells[row][col];
+    this.selectedCell = this.getCellFromElement(cellElement).cell;
     // Add `selected` class anme to grid Cell's element
     this.selectedCell.element.classList.add(selectedClass);
     this.selectedCell.element.focus();
@@ -193,13 +190,14 @@ export class Spreadsheet {
 
     if (target.tagName === "TD") {
       // Get cell col and row from target element
-      const row = parseInt(target.dataset[rowAttribute] ?? "0");
-      const col = parseInt(target.dataset[colAttribute] ?? "0");
-
-      // Set corrpesponding grid cell value equal to target element's text value
-      const cell = this.cells[row][col];
+      const { cell } = this.getCellFromElement(target);
       cell.value = target.textContent ?? "";
     }
+  }
+
+  private handleKeyPress(event: KeyboardEvent) {
+    this.handleCellKeyPressEnter(event);
+    this.handleFormattingKeyPress(event);
   }
 
   private handleCellKeyPressEnter(event: KeyboardEvent) {
@@ -244,6 +242,51 @@ export class Spreadsheet {
       col,
       cell,
     };
+  }
+
+  private handleFormattingKeyPress(event: KeyboardEvent) {
+    if (
+      (event.metaKey || event.ctrlKey) &&
+      ["b", "i", "u"].includes(event.key.toLowerCase()) &&
+      this.selectedCell
+    ) {
+      event.preventDefault();
+
+      const editableDiv = this.getEditableDiv();
+
+      if (editableDiv && editableDiv.isContentEditable === false) {
+        switch (event.key.toLowerCase()) {
+          case "b":
+            this.toggleCellFormat(editableDiv, "bold");
+            break;
+          case "i":
+            this.toggleCellFormat(editableDiv, "italic");
+            break;
+          case "u":
+            this.toggleCellFormat(editableDiv, "underline");
+            break;
+        }
+      }
+    }
+  }
+
+  private toggleCellFormat(editableDiv: HTMLDivElement, format: Format) {
+    if (this.selectedCell?.formatting.has(format)) {
+      this.selectedCell.formatting.delete(format);
+      editableDiv.classList.remove(format);
+    } else {
+      this.selectedCell?.formatting.add(format);
+      editableDiv.classList.add(format);
+    }
+  }
+
+  private getEditableDiv() {
+    if (this.selectedCell) {
+      return this.selectedCell.element.querySelector(
+        editableDivSelector
+      ) as HTMLDivElement;
+    }
+    return null;
   }
 }
 
