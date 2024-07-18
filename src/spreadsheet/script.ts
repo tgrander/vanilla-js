@@ -36,6 +36,8 @@ class Cell {
   }
 }
 
+const containerId = "#container";
+
 export class Spreadsheet {
   private gridSize = 10;
   private container: HTMLElement;
@@ -43,20 +45,22 @@ export class Spreadsheet {
   private selectedCell: Cell | null = null;
 
   constructor() {
-    const { container } = this.init();
+    const { container } = this.initAppShell();
     this.container = container;
+
+    // Create and render grid
+    this.createGrid();
   }
 
   /**
    * INIT SPREADSHEET
    */
-  private init() {
+  private initAppShell() {
     // Set heading text
     this.setHeadingText();
+
     // Render container
     const container = this.renderContainer();
-    // Create and render grid
-    this.createGrid();
 
     // Load CSS
     loadCSS("spreadsheet");
@@ -81,6 +85,8 @@ export class Spreadsheet {
     // Create container element
     const container = document.createElement("main");
     container.id = "container";
+
+    // Append to app
     app.appendChild(container);
 
     return container;
@@ -116,3 +122,6 @@ export class Spreadsheet {
     this.container.appendChild(table);
   }
 }
+
+// Instantiate spreadsheet app in index.html
+new Spreadsheet();

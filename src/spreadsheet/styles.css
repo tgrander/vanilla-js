@@ -1,0 +1,19 @@
+#container {
+  --_border: #e1e1e1;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+tr {
+  height: 2rem;
+}
+
+td,
+th {
+  width: 4rem;
+  border: 1px solid var(--_border);
+  padding: 0;
+}
