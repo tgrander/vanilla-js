@@ -1,3 +1,4 @@
+import { loadCSS } from "@/utils/loadCSS";
 import html from "noop-tag";
 
 interface Employee {
@@ -55,6 +56,9 @@ export class OrgChart {
     `;
 
     this.setPageTitleHeading();
+
+    // Load CSS
+    loadCSS("src/org-chart/styles.css");
   }
 
   private setPageTitleHeading() {

@@ -13,6 +13,7 @@
     "vite": "^5.3.4"
   },
   "dependencies": {
+    "@types/node": "^20.14.11",
     "noop-tag": "^2.0.0"
   }
 }
