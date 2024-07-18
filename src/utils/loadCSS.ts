@@ -1,4 +1,4 @@
-type Feature = "org-chart" | "spreadsheet";
+type Feature = "org-chart" | "spreadsheet" | "job-board";
 
 export function loadCSS(feature: Feature) {
   const link = document.createElement("link");

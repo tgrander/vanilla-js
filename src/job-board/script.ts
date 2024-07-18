@@ -29,6 +29,10 @@ import { loadCSS } from "@/utils/loadCSS";
  * Content Type: json
  */
 
+const pageTitle = "Hacker News Job Board";
+
+const jobIdsUrl = "https://hacker-news.firebaseio.com/v0/jobstories.json";
+
 interface Job {
   by: string;
   id: number;
@@ -54,12 +58,43 @@ async function fetcher(url: string) {
   }
 }
 
+async function fetchJobIds() {
+  return await fetcher(jobIdsUrl);
+}
+
+async function fetchJobDetails(id: number) {
+  const url = `https://hacker-news.firebaseio.com/v0/item/${id}.json`;
+  return await fetcher(url);
+}
+
+/**
+ * INITIAL FETCH REQUEST
+ * Fetch the job IDs
+ * How to handle loading states???
+ * Store response in class state
+ * Request job details of first six job IDs
+ *    - Have to request details individually => use Promise.all()
+ * Create new JobCard components for each job details data item
+ * Render job details list items to the app
+ *
+ *
+ * LOAD MORE JOBS
+ * Create button element and append to bottom of jobs list
+ * Add click event listener
+ *    - Does nothing if all jobs have been requested
+ *    - Makes fetch request for the next six job details
+ *
+ */
+
 export class JobBoard {
   jobIds: number[] = [];
   jobs: Job[] = [];
+  container: HTMLElement;
 
   constructor() {
+    this.container = document.getElementById("container") as HTMLElement;
     this.initAppShell();
+
     // Event Listeners
     this.addEventListeners();
   }
@@ -70,13 +105,16 @@ export class JobBoard {
   private initAppShell() {
     // Set heading text
     this.setHeadingText();
+    //
+
     // Load CSS
-    loadCSS("spreadsheet");
+    loadCSS("job-board");
   }
 
   private setHeadingText() {
     (document.querySelector("h1") as HTMLHeadingElement).textContent =
-      "Hacker News Job Board";
+      pageTitle;
+    document.title = pageTitle;
   }
 
   // Add Event Listeners

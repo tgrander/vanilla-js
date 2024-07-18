@@ -1,3 +1,7 @@
+body {
+  background-color: #d5d4d4;
+}
+
 .org-chart {
   display: flex;
   justify-content: center;
