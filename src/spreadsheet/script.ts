@@ -7,6 +7,7 @@ import { loadCSS } from "@/utils/loadCSS";
  * FEATURES
  * ---------
  * Cell Functionality:
+ * - Can select table
  * - Can input and edit text or numbers in each cell
  * - Can implement basic formatting, i.e. bold, italic, underline
  *
@@ -35,8 +36,6 @@ class Cell {
     this.element = element;
   }
 }
-
-const containerId = "#container";
 
 export class Spreadsheet {
   private gridSize = 10;
@@ -121,6 +120,21 @@ export class Spreadsheet {
     // Append spreadsheet grid to container element
     this.container.appendChild(table);
   }
+
+  // Init Event Listeners
+  private initEventListeners() {}
+
+  // Handle Cell Click
+  private handleCellClick(event: Event) {
+    const target = event.target as HTMLTableCellElement;
+
+    if (target.tagName === "TD") {
+      this.selectCell(target);
+    }
+  }
+
+  // Select Cell
+  private selectCell(cellElement: HTMLTableCellElement) {}
 }
 
 // Instantiate spreadsheet app in index.html

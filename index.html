@@ -2,59 +2,11 @@
 <html>
   <head>
     <title>Organization Chart</title>
-    <style>
-      html,
-      body {
-        height: 100%;
-        margin: 0;
-        padding: 0;
-      }
-      body {
-        font-family: Arial, sans-serif;
-        background-color: #d5d4d4;
-      }
-      ul {
-        padding: 0;
-      }
-      p {
-        margin: 0;
-      }
-
-      header {
-        display: flex;
-        gap: 1rem;
-      }
-
-      .heading {
-        width: 100%;
-        margin: 0 auto;
-        padding: 1rem;
-      }
-
-      .app {
-        height: 100%;
-        width: 90%;
-        margin: 0 auto;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        gap: 1rem;
-        background: white;
-        padding-top: 2rem;
-        padding-right: 1rem;
-        padding-left: 1rem;
-        border-radius: 1rem;
-      }
-
-      #container {
-        height: 100%;
-      }
-    </style>
+    <link rel="stylesheet" href="/src/global.css" />
   </head>
-
   <body>
     <h1 class="heading">Page</h1>
-    <div class="app"></div>
+    <div id="app"></div>
   </body>
 
   <script type="module" src="/src/spreadsheet/script.ts"></script>
