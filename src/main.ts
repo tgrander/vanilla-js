@@ -64,8 +64,8 @@ export class OrgChart {
     const node = document.createElement("div");
     node.className = "node";
     node.innerHTML = `
-          <div>${employee.name}</div>
-          <div>${employee.title}</div>
+          <div class="name">${employee.name}</div>
+          <div class="title">${employee.title}</div>
       `;
     return node;
   }
@@ -93,12 +93,17 @@ export class OrgChart {
     console.log("searchValue :>> ", searchValue);
 
     // ONly continue if search input value is valid
-    if (!!searchValue) {
+    if (searchValue.length > 0) {
+      console.log("traverse");
       // Traverse the org chart tree and check the name and title of each node for a match
       const nodes = this.container.getElementsByClassName("node");
       Array.from(nodes).forEach((node) => {
-        const name = node.getElementsByClassName("name")[0]?.textContent;
-        const title = node.getElementsByClassName("title")[0]?.textContent;
+        const name =
+          node.getElementsByClassName("name")[0]?.textContent?.toLowerCase() ??
+          "";
+        const title =
+          node.getElementsByClassName("title")[0]?.textContent?.toLowerCase() ??
+          "";
 
         // If a match, add `highlight` class to the node
         if (name !== null && name.includes(searchValue)) {
