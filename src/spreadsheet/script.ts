@@ -77,7 +77,7 @@ export class Spreadsheet {
 
   private renderContainer(): HTMLElement {
     // Get app element and clear contents
-    const app = document.querySelector(".app");
+    const app = document.getElementById("app");
     if (app === null) throw new Error("App element not found");
     app.innerHTML = "";
 
