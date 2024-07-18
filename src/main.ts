@@ -1,10 +1,118 @@
-interface EmployeeNode {
+interface Employee {
   name: string;
   title: string;
-  children?: Array<EmployeeNode>;
+  children?: Employee[];
 }
 
-const data: EmployeeNode = {
+export class OrgChart {
+  private container: HTMLElement;
+  private data: Employee;
+  private searchInput: HTMLInputElement;
+  private searchButton: HTMLButtonElement;
+
+  constructor(containerId: string, data: Employee) {
+    const container = document.getElementById(containerId);
+    if (container === null) throw "Container element not found";
+    this.container = container;
+
+    this.data = data;
+
+    const input = document.getElementById("search-input");
+    if (input === null) throw "Search input element not found";
+    this.searchInput = input as HTMLInputElement;
+
+    const searchButton = document.getElementById("search-button");
+    if (searchButton === null) throw "Search button element not found";
+    this.searchButton = searchButton as HTMLButtonElement;
+
+    this.init();
+  }
+
+  private init(): void {
+    this.render();
+    this.setupEventListeners();
+  }
+
+  private render(): void {
+    const chart = this.createChart(this.data);
+    this.container.innerHTML = "";
+    this.container.appendChild(chart);
+  }
+
+  private createChart(employee: Employee): HTMLElement {
+    const ul = document.createElement("ul");
+    ul.className = "org-chart";
+
+    const li = document.createElement("li");
+    const node = this.createNode(employee);
+    li.appendChild(node);
+
+    if (employee.children && employee.children.length > 0) {
+      const childrenUl = document.createElement("ul");
+      employee.children.forEach((child) => {
+        childrenUl.appendChild(this.createChart(child));
+      });
+      li.appendChild(childrenUl);
+    }
+
+    ul.appendChild(li);
+    return ul;
+  }
+
+  // Create Node
+  private createNode(employee: Employee): HTMLElement {
+    const node = document.createElement("div");
+    node.className = "node";
+    node.innerHTML = `
+          <div>${employee.name}</div>
+          <div>${employee.title}</div>
+      `;
+    return node;
+  }
+
+  // Setup Event Listeners
+  private setupEventListeners() {
+    // Enter key pressed in search input
+    this.searchInput.addEventListener("keydown", (event) => {
+      if (event.key === "Enter") {
+        this.handleSearch();
+      }
+    });
+
+    // Click search button
+    this.searchButton.addEventListener("click", () => {
+      this.handleSearch();
+    });
+  }
+
+  private handleSearch() {
+    // User presses Enter key or search button
+    // Add event listener to input field and search button that triggers this function
+    // Get the input field value
+    const searchValue = this.searchInput.value.trim().toLocaleLowerCase();
+    console.log("searchValue :>> ", searchValue);
+
+    // ONly continue if search input value is valid
+    if (!!searchValue) {
+      // Traverse the org chart tree and check the name and title of each node for a match
+      const nodes = this.container.getElementsByClassName("node");
+      Array.from(nodes).forEach((node) => {
+        const name = node.getElementsByClassName("name")[0]?.textContent;
+        const title = node.getElementsByClassName("title")[0]?.textContent;
+
+        // If a match, add `highlight` class to the node
+        if (name !== null && name.includes(searchValue)) {
+          node.classList.add("highlight");
+        }
+        if (title !== null && title.includes(searchValue)) {
+          node.classList.add("highlight");
+        }
+      });
+    }
+  }
+}
+
+const orgData: Employee = {
   name: "John Doe",
   title: "CEO",
   children: [
@@ -25,98 +133,4 @@ const data: EmployeeNode = {
   ],
 };
 
-/**
- * FEATURES
- * - Render org chart HTML as tree structure
- * - Each employee node in org chart displays name + title
- * - Nodes with children can be expanded/collapsed
- * - Search functionality to highlight matching nodes
- * - Implement drag and drop to reorg chart
- *
- * REQUIREMENTS
- * - Vanilla JS
- * - Responsive
- */
-
-export class OrgChart {
-  private container: HTMLElement;
-  private data: EmployeeNode;
-
-  constructor(containerId: string, data: EmployeeNode) {
-    const container = document.getElementById(containerId);
-    if (!container) {
-      throw `No container element found with id ${containerId}`;
-    }
-    this.container = container;
-    this.data = data;
-    this.render();
-  }
-
-  render() {
-    const chart = this.createChart(this.data);
-    this.container.innerHTML = "";
-    this.container.appendChild(chart);
-  }
-
-  createChart(rootNode: EmployeeNode) {
-    const ul = document.createElement("ul");
-    ul.className = "org-chart";
-
-    const li = document.createElement("li");
-    const node = this.createEmployeeNode(rootNode);
-    li.appendChild(node);
-
-    if (rootNode.children && rootNode.children.length > 0) {
-      const childrenList = document.createElement("ul");
-
-      rootNode.children.forEach((child) => {
-        childrenList.appendChild(this.createChart(child));
-      });
-
-      li.appendChild(childrenList);
-    }
-
-    ul.appendChild(li);
-    return ul;
-  }
-
-  // Create employee node
-  createEmployeeNode(employee: EmployeeNode): HTMLDivElement {
-    const node = document.createElement("div");
-    node.classList.add("node");
-
-    const name = document.createElement("p");
-    name.className = "name";
-    name.textContent = employee.name;
-
-    const title = document.createElement("p");
-    title.textContent = employee.title;
-    title.className = "title";
-
-    node.appendChild(name);
-    node.appendChild(title);
-
-    return node;
-  }
-}
-
-new OrgChart("chart-container", data);
-
-/**
- * Example output"
- *
- *`
-  <ul>
-    <li>John Doe</li>
-    <ul>
-      <li>
-        Jane Smith
-        <ul>
-          <li>Bob Johnson</li>
-        </ul>
-      </li>
-      <li>Mike Brown</li>
-    </ul>
-  </ul>
-`;
- */
+new OrgChart("org-chart-container", orgData);
