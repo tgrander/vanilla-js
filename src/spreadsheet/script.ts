@@ -37,6 +37,7 @@ class Cell {
 }
 
 export class Spreadsheet {
+  private gridSize = 10;
   private container: HTMLElement;
   private cells: Cell[][] = [];
   private selectedCell: Cell | null = null;
@@ -54,6 +55,9 @@ export class Spreadsheet {
     this.setHeadingText();
     // Render container
     const container = this.renderContainer();
+    // Create and render grid
+    this.createGrid();
+
     // Load CSS
     loadCSS("spreadsheet");
 
@@ -80,5 +84,35 @@ export class Spreadsheet {
     app.appendChild(container);
 
     return container;
+  }
+
+  /**
+   * CREATE SPREADSHEET GRID
+   */
+  private createGrid() {
+    // Create table element
+    const table = document.createElement("table");
+
+    // Create table rows equal to grid size
+    for (let i = 0; i < this.gridSize; i++) {
+      const row = table.insertRow();
+      this.cells[i] = [];
+
+      // Create row cells equal to grid size
+      for (let j = 0; j < this.gridSize; j++) {
+        const cell = row.insertCell();
+        // Enable cell for user input
+        cell.contentEditable = "true";
+        // Create dataset attr for row
+        cell.dataset.row = i.toString();
+        // // Create dataset attr for column
+        cell.dataset.col = j.toString();
+        // Complete the cells 2D grid by creating new Cell at position (i, j)
+        this.cells[i][j] = new Cell(cell);
+      }
+    }
+
+    // Append spreadsheet grid to container element
+    this.container.appendChild(table);
   }
 }
