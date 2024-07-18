@@ -1,4 +1,5 @@
 import { loadCSS } from "@/utils/loadCSS";
+import html from "noop-tag";
 
 /**
  * - Create Cell interface with properties: column (A, B, C), row (1,2,3), value (str)
@@ -7,8 +8,8 @@ import { loadCSS } from "@/utils/loadCSS";
  * FEATURES
  * ---------
  * Cell Functionality:
- * - Can select table
- * - Can input and edit text or numbers in each cell
+ * ✅ Can select table cell
+ * ✅ Can input and edit text or numbers in each cell
  * - Can implement basic formatting, i.e. bold, italic, underline
  *
  * Formula Support:
@@ -39,8 +40,12 @@ class Cell {
 
 const rowAttribute = "row";
 const colAttribute = "col";
-
 const selectedClass = "selected";
+
+const TAG_NAMES = {
+  TD: "TD",
+  // Add more as needed
+} as const;
 
 export class Spreadsheet {
   private gridSize = 10;
@@ -55,7 +60,7 @@ export class Spreadsheet {
     // Create and render grid
     this.createGrid();
     // Event Listeners
-    this.initEventListeners();
+    this.addEventListeners();
   }
 
   /**
@@ -114,13 +119,18 @@ export class Spreadsheet {
       for (let j = 0; j < this.gridSize; j++) {
         const cell = row.insertCell();
         // Enable cell for user input
-        cell.contentEditable = "true";
+        // cell.contentEditable = "true";
         // Create dataset attr for row
         cell.dataset[rowAttribute] = i.toString();
         // // Create dataset attr for column
         cell.dataset[colAttribute] = j.toString();
         // Complete the cells 2D grid by creating new Cell at position (i, j)
         this.cells[i][j] = new Cell(cell);
+
+        // Editable div to control cell interactions
+        cell.innerHTML = html`
+          <div class="editable" contenteditable="false"></div>
+        `;
       }
     }
 
@@ -128,19 +138,24 @@ export class Spreadsheet {
     this.container.appendChild(table);
   }
 
-  // Init Event Listeners
-  private initEventListeners() {
+  // Add Event Listeners
+  private addEventListeners() {
     this.container.addEventListener("click", this.handleCellClick.bind(this));
+    this.container.addEventListener("input", this.handleCellInput.bind(this));
+    this.container.addEventListener(
+      "dblclick",
+      this.handleCellDoubleClick.bind(this)
+    );
+    document.addEventListener(
+      "keydown",
+      this.handleCellKeyPressEnter.bind(this)
+    );
   }
 
   // Handle Cell Click
   private handleCellClick(event: Event) {
-    const target = event.target as HTMLTableCellElement;
-
-    if (target.tagName === "TD") {
-      this.handleSelectCell(target);
-
-      console.log("this.selectedCell :>> ", this.selectedCell);
+    if (isTableCellEvent(event)) {
+      this.handleSelectCell(event.target as HTMLTableCellElement);
     }
   }
 
@@ -149,6 +164,16 @@ export class Spreadsheet {
     // remove `selected` class from prev selected cell
     if (this.selectedCell) {
       this.selectedCell.element.classList.remove(selectedClass);
+
+      // Prev selected div not editable
+      const editableDiv = this.selectedCell.element.querySelector(
+        "div.editable"
+      ) as HTMLDivElement;
+
+      if (editableDiv) {
+        editableDiv.contentEditable = "false";
+        editableDiv.blur();
+      }
     }
 
     // Extract cell row and column from cell element data attributes
@@ -160,7 +185,74 @@ export class Spreadsheet {
     this.selectedCell = this.cells[row][col];
     // Add `selected` class anme to grid Cell's element
     this.selectedCell.element.classList.add(selectedClass);
+    this.selectedCell.element.focus();
   }
+
+  private handleCellInput(event: Event) {
+    const target = event.target as HTMLTableCellElement;
+
+    if (target.tagName === "TD") {
+      // Get cell col and row from target element
+      const row = parseInt(target.dataset[rowAttribute] ?? "0");
+      const col = parseInt(target.dataset[colAttribute] ?? "0");
+
+      // Set corrpesponding grid cell value equal to target element's text value
+      const cell = this.cells[row][col];
+      cell.value = target.textContent ?? "";
+    }
+  }
+
+  private handleCellKeyPressEnter(event: KeyboardEvent) {
+    if (event.key === "Enter") {
+      if (this.selectedCell) {
+        event.preventDefault();
+        this.toggleCellEditable(this.selectedCell.element);
+      }
+    }
+  }
+
+  private handleCellDoubleClick(event: Event) {
+    const target = event.target as HTMLTableCellElement as HTMLTableCellElement;
+
+    if (isTableCellElement(target) && this.selectedCell) {
+      this.toggleCellEditable(this.selectedCell?.element);
+    }
+  }
+
+  private toggleCellEditable(selectedCellElement: HTMLTableCellElement) {
+    const editableDiv = selectedCellElement.querySelector(
+      "div.editable"
+    ) as HTMLDivElement;
+
+    if (editableDiv) {
+      editableDiv.contentEditable =
+        editableDiv.contentEditable === "true" ? "false" : "true";
+
+      editableDiv.contentEditable === "true"
+        ? editableDiv.focus()
+        : editableDiv.blur();
+    }
+  }
+
+  private getCellFromElement(element: HTMLTableCellElement) {
+    const row = parseInt(element.dataset[rowAttribute] ?? "0");
+    const col = parseInt(element.dataset[colAttribute] ?? "0");
+    const cell = this.cells[row][col];
+
+    return {
+      row,
+      col,
+      cell,
+    };
+  }
+}
+
+function isTableCellEvent(event: Event) {
+  const element = event.target as Element;
+  return element.tagName === TAG_NAMES.TD;
+}
+function isTableCellElement(element: HTMLElement) {
+  return element.tagName === TAG_NAMES.TD;
 }
 
 // Instantiate spreadsheet app in index.html

@@ -13,8 +13,22 @@ tr {
 
 td,
 th {
+  position: relative;
   width: 4rem;
+  padding: 0.25rem;
   border: 1px solid var(--_border);
-  padding: 0.25rem 0.25rem;
-  vertical-align: middle;
+  text-align: left;
+  vertical-align: center;
+}
+
+.selected {
+  border: 0.16rem solid royalblue;
+}
+
+.editable {
+  width: 100%;
+  height: 100%;
+  border: none;
+  outline: none;
+  cursor: text;
 }
