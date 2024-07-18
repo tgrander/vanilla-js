@@ -25,6 +25,7 @@ body {
 
 ul {
   padding: 0;
+  list-style-type: none;
 }
 
 p {
@@ -33,7 +34,6 @@ p {
 
 a {
   font-weight: 500;
-  color: #646cff;
   text-decoration: inherit;
 }
 a:hover {

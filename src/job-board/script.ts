@@ -1,124 +1,143 @@
-import { loadCSS } from "@/utils/loadCSS";
-// import html from "noop-tag";
+import { formatDate, loadCSS } from "@/utils";
+import {
+  Job,
+  QueryManager,
+  fetchJobDetails,
+  fetchJobIds,
+} from "./script/queryStateManager";
 
-/**
- * - Fetch job postings from HN API
- *    - First fetch job posting IDs
- *    - Initial fetch for 6 postings when page first mounts
- *
- * - Render list of job postings:
- *    - job title, poster, date
- *    - If job posting contains a url, make the job title a link that opens the job details page in a new window when clicked.
- *    - Format timestamp
- *
- * - 'Load More' button to fetch the next six postings
- *    - Disable button if response from API contains less than 6 postings
- */
-
-/**
- * API ENDPOINTS:
- * ==============
- *
- * GET: Job IDs
- * URL: https://hacker-news.firebaseio.com/v0/jobstories.json
- * Content Type: json
- *
- *
- * GET: Job Details
- * URL: https://hacker-news.firebaseio.com/v0/item/{id}.json
- * Content Type: json
- */
-
-const pageTitle = "Hacker News Job Board";
-
-const jobIdsUrl = "https://hacker-news.firebaseio.com/v0/jobstories.json";
-
-interface Job {
-  by: string;
-  id: number;
-  score: number;
-  time: number;
-  title: string;
-  type: string;
-  url?: string | null;
-}
-
-async function fetcher(url: string) {
-  try {
-    const response = await fetch(url);
-
-    if (!response.ok)
-      throw new Error("Network response was not ok " + response.statusText);
-
-    const data = await response.json();
-
-    return data;
-  } catch (error) {
-    throw new Error("There was a problem with the fetch operation: " + error);
-  }
-}
-
-async function fetchJobIds() {
-  return await fetcher(jobIdsUrl);
-}
-
-async function fetchJobDetails(id: number) {
-  const url = `https://hacker-news.firebaseio.com/v0/item/${id}.json`;
-  return await fetcher(url);
-}
-
-/**
- * INITIAL FETCH REQUEST
- * Fetch the job IDs
- * How to handle loading states???
- * Store response in class state
- * Request job details of first six job IDs
- *    - Have to request details individually => use Promise.all()
- * Create new JobCard components for each job details data item
- * Render job details list items to the app
- *
- *
- * LOAD MORE JOBS
- * Create button element and append to bottom of jobs list
- * Add click event listener
- *    - Does nothing if all jobs have been requested
- *    - Makes fetch request for the next six job details
- *
- */
+import html from "noop-tag";
 
 export class JobBoard {
-  jobIds: number[] = [];
-  jobs: Job[] = [];
-  container: HTMLElement;
+  private container: HTMLElement;
+  private jobList!: HTMLUListElement;
+  private loadMoreButton!: HTMLButtonElement;
+  private jobIdsManager: QueryManager<number[], []>;
+  private jobDetailsManager: QueryManager<Job[], Array<number[]>>;
+  private currentIndex: number = 0;
+  private batchSize: number = 6;
 
   constructor() {
     this.container = document.getElementById("container") as HTMLElement;
-    this.initAppShell();
+    this.initUI();
 
-    // Event Listeners
-    this.addEventListeners();
+    this.jobIdsManager = new QueryManager(fetchJobIds);
+    this.jobDetailsManager = new QueryManager(this.fetchMultipleJobDetails);
+
+    this.jobIdsManager.subscribe(() => this.handleJobIdsUpdate());
+    this.jobDetailsManager.subscribe(() => this.handleJobDetailsUpdate());
+
+    this.loadInitialData();
   }
 
   /**
-   * INIT SPREADSHEET
+   * INIT UI
    */
-  private initAppShell() {
-    // Set heading text
-    this.setHeadingText();
-    //
+  private initUI() {
+    this.container.innerHTML = html`
+      <ul id="job-list" aria-live="polite"></ul>
+      <button id="load-more" disabled>Load More</button>
+    `;
 
-    // Load CSS
+    (document.querySelector("h1.heading") as HTMLHeadingElement).textContent =
+      "Hacker News Job Board";
+
+    this.jobList = this.container.querySelector(
+      "#job-list"
+    ) as HTMLUListElement;
+
+    this.loadMoreButton = this.container.querySelector(
+      "#load-more"
+    ) as HTMLButtonElement;
+
+    this.loadMoreButton.addEventListener("click", () => this.loadMoreJobs());
+
     loadCSS("job-board");
   }
 
-  private setHeadingText() {
-    (document.querySelector("h1") as HTMLHeadingElement).textContent =
-      pageTitle;
-    document.title = pageTitle;
+  /**
+   * DATA FETCHING
+   */
+  private async loadInitialData() {
+    await this.jobIdsManager.query();
   }
 
-  // Add Event Listeners
-  private addEventListeners() {}
+  private handleJobIdsUpdate() {
+    const { data, error } = this.jobIdsManager.getState();
+    if (error) {
+      this.showError("Failed to fetch job IDs");
+    } else if (data) {
+      this.loadMoreJobs();
+    }
+  }
+
+  private handleJobDetailsUpdate() {
+    const { data, error } = this.jobDetailsManager.getState();
+    if (error) {
+      this.showError("Failed to fetch job details");
+    } else if (data) {
+      this.renderJobs(data);
+    }
+  }
+
+  private async loadMoreJobs() {
+    const jobIds = this.jobIdsManager.getState().data;
+    if (!jobIds) return;
+
+    const nextBatch = jobIds.slice(
+      this.currentIndex,
+      this.currentIndex + this.batchSize
+    );
+    if (nextBatch.length === 0) {
+      this.loadMoreButton.disabled = true;
+      return;
+    }
+
+    await this.jobDetailsManager.query({}, nextBatch);
+    this.currentIndex += this.batchSize;
+    this.loadMoreButton.disabled = this.currentIndex >= jobIds.length;
+  }
+
+  private fetchMultipleJobDetails = async (
+    jobIds: number[]
+  ): Promise<Job[]> => {
+    return Promise.all(jobIds.map(fetchJobDetails));
+  };
+
+  private showError(message: string) {
+    const errorElement = document.createElement("p");
+    errorElement.textContent = message;
+    errorElement.className = "error";
+    this.container.insertBefore(errorElement, this.jobList);
+  }
+
+  /**
+   * JOB LIST
+   */
+  private renderJobs(jobs: Job[]) {
+    jobs.forEach((job) => {
+      const li = document.createElement("li");
+      li.className = "job";
+      li.innerHTML = `
+        <div class="job-card">
+          <h3>${this.createJobTitle(job)}</h3>
+          <div class="metadata">
+            <span>By ${job.by}</span>
+            <span>-</span>
+            <span>${formatDate(job.time)}</span>
+          </div>
+        </div>
+      `;
+      this.jobList.appendChild(li);
+    });
+  }
+
+  private createJobTitle(job: Job): string {
+    const title = job.title;
+    return job.url
+      ? `<a href="${job.url}" target="_blank" rel="noopener noreferrer">${title}</a>`
+      : title;
+  }
 }
 
 new JobBoard();

@@ -1,3 +1,10 @@
 body {
   background-color: white;
 }
+
+.job-card .metadata {
+  display: flex;
+  justify-content: start;
+  align-items: center;
+  gap: 1rem;
+}
