@@ -111,9 +111,6 @@ export class JobBoard {
     this.container.insertBefore(errorElement, this.jobList);
   }
 
-  /**
-   * JOB LIST
-   */
   private renderJobs(jobs: Job[]) {
     jobs.forEach((job) => {
       const li = document.createElement("li");
